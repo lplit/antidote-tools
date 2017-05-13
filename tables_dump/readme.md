@@ -1,3 +1,25 @@
+- [Intro](#intro)
+- [Dependencies](#dependencies)
+  * [[Antidote](https://github.com/SyncFree/antidote)](#-antidote--https---githubcom-syncfree-antidote-)
+  * [[ETS - Erlang Term Storage](http://erlang.org/doc/man/ets.html)](#-ets---erlang-term-storage--http---erlangorg-doc-man-etshtml-)
+  * [[Erlang Remote Procedure Calls](http://erlang.org/doc/man/rpc.html)](#-erlang-remote-procedure-calls--http---erlangorg-doc-man-rpchtml-)
+- [Antidote Tables](#antidote-tables)
+    + [Available tables discovery](#available-tables-discovery)
+    + [Table information](#table-information)
+    + [Reading a table](#reading-a-table)
+    + [Table to file](#table-to-file)
+    + [File to table](#file-to-table)
+- [Understanding the contents](#understanding-the-contents)
+  * [Snapshot cache contents](#snapshot-cache-contents)
+  * [Operations cache contents](#operations-cache-contents)
+  * [OpID Table](#opid-table)
+  * [Commited TXs table](#commited-txs-table)
+- [Usage](#usage)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
+
 ## Intro
 This scripts were developed in order to easily dump cache and snapshot tables from [Antidote](https://github.com/SyncFree/antidote) to a file. Script is split into two parts ```cache_dump.erl``` and ```snapshot_dump.erl```, that each do their own part of the job.
 ## Dependencies
