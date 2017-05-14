@@ -20,7 +20,7 @@ e['avg_tput']= float(((avg/3)/10)*(1022+writes))/1000000 # For exponential
 
 ```
 
-Various other settings are definable in the [```plot(workload)``` function](./throughput.py#L159). Notably at [line 179](./throughput.py#L179) desired write ratios to plot can be defined.
+Various other settings are definable in the [```plot(workload)``` function](./throughput.py#L159-L244). Notably at [line 179](./throughput.py#L179) desired write ratios to plot can be defined.
 
 ```python
 writes = [10, 100]
@@ -87,24 +87,13 @@ Workload dictionary for plotting
  'threads' : # of threads/clients
  }
 ```
-General algo:
 
-```
-Foreach type in [Physics, ClockSI, EC]
-  Foreach keyspace in [1m, 10m]  
-    Foreach thread_nb in [1 3 5 7 10 15 20 30 40]  
-      [(30s+40s+50s)/3]) against throughput
-        1 graph
-	 3 lines, one for each pair from [[100, 2], [100, 10], [100, 100]
-```
 ### Example
 ![Example throughput plot](./images/singledc.png "Throughput example plot")
 
 
 ## Staleness script
-Plots a [CDF](https://en.wikipedia.org/wiki/Cumulative_distribution_function) plot for version staleness, i.e. the % a version has been skipped. The below example illustrates that for ~99% of reads, the most recent version has been returned. 
-### Example output 
-![Example staleness plot](./images/example-staleness-muli-dc-multi-round-phyx-csi.png "Staleness chart")
+Plots a [CDF](https://en.wikipedia.org/wiki/Cumulative_distribution_function) plot for version staleness. The below example illustrates that for ~99% of reads, the most recent version has been returned for the red curve.
 
 ### Tree structure
 ```bash
@@ -127,3 +116,6 @@ staleness-2017-04-12-1492030851-clocksi/
 ```
 Files follow the same naming convention as for throughput directories, that is:
 ```Stale-keyspace-rounds-reads-writes-client_threads```
+
+### Example output 
+![Example staleness plot](./images/example-staleness-muli-dc-multi-round-phyx-csi.png "Staleness chart")
