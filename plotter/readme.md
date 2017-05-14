@@ -20,7 +20,7 @@ e['avg_tput']= float(((avg/3)/10)*(1022+writes))/1000000 # For exponential
 
 ```
 
-Various other settings are definable in the [```plot(workload)``` function](./throughput.py#159). Notably at [line 179](./throughput.py#179) desired write ratios to plot can be defined.
+Various other settings are definable in the [```plot(workload)``` function](./throughput.py#L159). Notably at [line 179](./throughput.py#L179) desired write ratios to plot can be defined.
 
 ```python
 writes = [10, 100]
