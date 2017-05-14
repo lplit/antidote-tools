@@ -202,9 +202,9 @@ def plot(workload):
 #        tenmil_txput = tenmil_txput[l:]
         om_label = exp+" k:1m w:" + str(wr)
         if wr == 10:
-            tm_label = exp+" w: 1%"
-        elif wr == 100:
             tm_label = exp+" w: 10%"
+        elif wr == 100:
+            tm_label = exp+" w: 100%"
         sorted_one = sorted(plot_data_one_mil, key=lambda k: int(k['th']))
         sorted_ten = sorted(plot_data_ten_mil, key=lambda k: int(k['th']))
 
@@ -219,7 +219,7 @@ def plot(workload):
             
         for i in sorted_ten:
             if exp=="CR": # Physics hacks
-                lat = i['l_tp'][0]-8
+                lat = i['l_tp'][0]
             else:
                 lat = i['l_tp'][0]
             tput = i['l_tp'][1]
