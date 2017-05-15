@@ -11,6 +11,7 @@ Python scripts for plotting [Basho Bench](https://github.com/SyncFree/basho_benc
 
 ## [Dump scripts](./tables_dump/)
 Erlang scripts for dumping *log*, and *cache/snapshot* tables into files.
+A lot of useful information about log structures, log handling and schematics is present here.
 
 ## [Parser](./parser/)
-This implementation has been **abandoned** and the functionalities will be directly implemented into [Antidote](https://github.com/SyncFree/antidote) replication protocols. However, a lot of useful information about log structure and handling are present.
+This implementation has been **abandoned** and the functionalities will be directly implemented into [Antidote](https://github.com/SyncFree/antidote) replication protocols.

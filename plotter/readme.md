@@ -54,14 +54,14 @@ bench-2017-04-12-1492022929-ec/
 │   └── txn_latencies.csv
 ...
 ```
-The scrip recovers a number of information from directory name. For example ```basho_bench_summary-11-22-33-44-44-55``` represents the following:
+The scrip recovers a number of information from directory name. For example ```basho_bench_summary-11-22-33-44-55``` represents the following:
 
 ```
 keyspace: 		11
 rounds:			22
 reads:			33
 writes:			44
-client_threads:	55
+client_threads:		55
 ```
 therefore directories names should follow the following naming scheme:
  ```basho_bench_summary-keyspace-rounds-reads-writes-client_threads```
@@ -74,7 +74,8 @@ workload = {
 'type'    # Basho bench or staleness
 'keys'    # 1m or 10m
 'rounds'  # 10 usually
-'reads'   # 100 usually 'writes'  : one from [2, 10, 100]
+'reads'   # 100 usually 
+'writes'  # one from [2, 10, 100]
 'threads' # one from [1, 3, 5, 7, 10, 15, 20, 30, 40]
 'f_tput'  # summary csv file
 'f_lat'   # latency csv file
