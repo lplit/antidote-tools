@@ -3,7 +3,7 @@
 This repo contains tools developed for [Antidote](https://github.com/SyncFree/antidote)
 
 ## [Plotter](./plotter/)
-Python scripts for plotting [Basho Bench](https://github.com/SyncFree/basho_bench) results, both for *Staleness* and *Throughput*
+Python scripts for plotting [Basho Bench](https://github.com/SyncFree/basho_bench) results from [this set of scripts](https://github.com/SyncFree/basho_bench/tree/ec1/script/g5k), both for *Staleness* and *Throughput*
 
 
 ![Example throughput plot](./plotter/images/singledc.png "Throughput example plot")
