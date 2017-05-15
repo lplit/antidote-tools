@@ -107,7 +107,7 @@ The [tab2file](http://erlang.org/doc/man/ets.html#tab2file-2) function -
 ```
 
 #### File to table
-The [file2tab](http://erlang.org/doc/man/ets.html#file2tab-2) - ```ets:file2tab(Filename, Options)``` - function reads a file produced by ```tab2file``` and creates the corresponding table. 
+The [file2tab](http://erlang.org/doc/man/ets.html#file2tab-2) - ```ets:file2tab(Filename, Options)``` - function reads a file produced by ```ets:tab2file``` and creates the corresponding table. 
 
 ```erlang
 > ets:file2tab('outputFile.ets', [{verify, true}]).
@@ -115,8 +115,6 @@ The [file2tab](http://erlang.org/doc/man/ets.html#file2tab-2) - ```ets:file2tab(
 ```
 
 ## Understanding the contents
-To understand the complete log structure, refer to [the main readme](../readme.md).
-
 Supposing the following interaction with Antidote
 
 ```erlang 
@@ -136,7 +134,7 @@ CounterVal = rpc:call(Node, antidote, read_objects, [ignore, [], [CounterObj]]),
    1}}]
 Ok
 ```
-#### What's what
+#### Pattern
 ```erlang
 key, snapshot_time, 
 materialized_snapshot {
@@ -204,7 +202,7 @@ clocksi_payload {
   		{'antidote@127.0.0.1',{1490,186897,598677}}},
              1,1}}]          
 ```
-#### What's what
+#### Pattern
 ```erlang
 key_hash= 502391187832497878132516661246222288006726811648,
 op_number {
@@ -235,7 +233,7 @@ bucket_op_number =
 > ets:tab2list(2031729). 
 [{{my_counter,my_bucket},1490186922302997}]
 ```
-#### What's what
+#### Pattern
 ```erlang
 key {mycounter, mybucket}
 timestamp = 1490186922302997
@@ -417,10 +415,7 @@ disk_log:accessible_logs().
 ```  
 
 - Prepare the dump filename, which respects following syntax for facilitated differentiation: `log_dump-YEAR_MONTH_DAY-HOUR_MINUTE_SECOND.txt`
-	The time values are fetched with Erlang's BIF:
-	```erlang
-	> calendar:now_to_local_time(erlang:timestamp()).
-	```
+The time values are fetched with Erlang's BIF: `calendar:now_to_local_time(erlang:timestamp()).`
 - The log files are treated sequentially in the alphanumerical order (i.e. as provided by `disk_log:accessible_logs()` call) and delivered following many-to-one scenario (all the logs are stored in a single dump file), in the directory specified as 2nd call argument.
 	Erlang terms formatting is maintained, in order to ensure compatibility with BIF functions used to reload records into memory. Notably the `file:consult/1` and `erlang:is_record/2,3`. The former allows to parse a file and store its contents into Erlang records - assuming they're properly formatted - the latter verifies the record integrity  
 	Turns out because of specific formatting used within Antidote, those BIFs do not work in this particular scenario.
