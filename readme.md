@@ -10,7 +10,7 @@ Python scripts for plotting [Basho Bench](https://github.com/SyncFree/basho_benc
 ![Example staleness plot](./plotter/images/example-staleness-muli-dc-multi-round-phyx-csi.png "Staleness chart")
 
 ## [Dump scripts](./tables_dump/)
-Erlang scripts for dumping *cache* and *snapshot* tables into files
+Erlang scripts for dumping *log*, and *cache/snapshot* tables into files.
 
 ## [Parser](./parser/)
 This implementation has been **abandoned** and the functionalities will be directly implemented into [Antidote](https://github.com/SyncFree/antidote) replication protocols. However, a lot of useful information about log structure and handling are present.

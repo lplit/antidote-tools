@@ -1,16 +1,27 @@
 ## Intro
-This scripts were developed in order to easily dump cache and snapshot tables from [Antidote](https://github.com/SyncFree/antidote) to a file. Script is split into two parts ```cache_dump.erl``` and ```snapshot_dump.erl```, that each do their own part of the job.
+These scripts were developed in order to easily dump cache and snapshot tables from [Antidote](https://github.com/SyncFree/antidote) to a file. ```cache_dump.erl``` handles *snapshots* and *caches*, while ```log_dupm.erl``` handles the *internal logs*.
 ## Dependencies
-### [Antidote](https://github.com/SyncFree/antidote)
+### General 
+#### [Antidote](https://github.com/SyncFree/antidote)
 Stating the obvious
 
-### [ETS - Erlang Term Storage](http://erlang.org/doc/man/ets.html)
-The script uses RPCs and pulls information from Erlang's built-in storage tables used to store the caches and snapshots
-
-### [Erlang Remote Procedure Calls](http://erlang.org/doc/man/rpc.html)
+#### [Erlang Remote Procedure Calls](http://erlang.org/doc/man/rpc.html)
 All of the interaction with Antidote is executed via RPC calls
 
-## Antidote Tables
+
+### ```cache_dump.erl``` specific
+
+#### [ETS - Erlang Term Storage](http://erlang.org/doc/man/ets.html)
+The script uses RPCs and pulls information from Erlang's built-in storage tables used to store the caches and snapshots
+
+
+### ```log_dump.erl``` specific 
+
+#### [Erlang Disk Log](http://erlang.org/doc/man/disk_log.html)
+Antidote uses the [Erlang Disk Log](http://erlang.org/doc/man/disk_log.html) module to handle logs interanaly. 
+
+
+## Caches dump - ```cache_dump.erl```
 #### Available tables discovery
 All the calls are executed with RPC inside the script, but will be explained as local calls for simplicity's sake. Example outputs have also been shortened, to keep this readme concise.
 
@@ -240,3 +251,40 @@ Assuming an Antidote instance is running at localhost `127.0.0.1`, registered un
 ```bash
 $ cache_dump.erl 'antidote@127.0.0.1', "./dump_dir/"
 ```
+
+
+## Log dump - ```log_dump.erl```
+### Internal log structure
+![Log structure](./images/struct_log.png "Log structure")
+
+### Logs in storage
+#### Structure
+Logs in storage only consist of ```log_operation :: log_operation()```
+part, that is, ```tx_id, op_type, log_payload```
+#### Log files naming
+Log file names are key space hashes, meaning that ```123-456.LOG``` contains data relative to keys, where the first hashes to ```123``` and the last to ```456```, they're stored in ```$_build/default/rel/antidote/data/*.LOG``` More on that in "Key space partitions".
+#### Key space partitions
+Partitions are vnodes handling key spaces, routing keys are calculated with
+
+```erlang
+-spec riak_core_util:chash_key(Key :: {any(), any()}) -> binary().
+```
+
+This function returns an integer between 0 and 2^160 - 1. The obtained integer refers to a particular position in Riak Core’s 160-bit circular key-space.
+
+
+```erlang
+> dc_utilities:get_all_partitions()
+```
+Returns a list of all partition indices in the cluster.
+
+
+#### `sync_log` parameter
+```sync_log```, definable in ```$ src/antidote.app.src``` 
+
+`true` : local transactions will be stored on log synchronously, i.e. when the reply is sent the updates are guaranteed to be
+stored to disk (this is very slow in the current logging setup)
+
+`false` : all updates are sent to the operating system to be stored to disk (eventually), but are not guaranteed to be stored durably on disk
+when the reply is sent
+
