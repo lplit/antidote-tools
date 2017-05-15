@@ -254,6 +254,9 @@ $ cache_dump.erl 'antidote@127.0.0.1', "./dump_dir/"
 
 
 ## Log dump - ```log_dump.erl```
+
+### Dependencies
+
 ### Internal log structure
 ![Log structure](./images/struct_log.png "Log structure")
 
@@ -262,7 +265,7 @@ $ cache_dump.erl 'antidote@127.0.0.1', "./dump_dir/"
 Logs in storage only consist of ```log_operation :: log_operation()```
 part, that is, ```tx_id, op_type, log_payload```
 #### Log files naming
-Log file names are key space hashes, meaning that ```123-456.LOG``` contains data relative to keys, where the first hashes to ```123``` and the last to ```456```, they're stored in ```$_build/default/rel/antidote/data/*.LOG``` More on that in "Key space partitions".
+Log file names come from key hashes, meaning that ```123-456.LOG``` contains data relative to keys, where the first hashes to ```123``` and the last to ```456```, they're stored in ```$_build/default/rel/antidote/data/*.LOG``` 
 #### Key space partitions
 Partitions are vnodes handling key spaces, routing keys are calculated with
 
@@ -288,3 +291,171 @@ stored to disk (this is very slow in the current logging setup)
 `false` : all updates are sent to the operating system to be stored to disk (eventually), but are not guaranteed to be stored durably on disk
 when the reply is sent
 
+### Understanding the log contents
+#### Prepare
+
+```erlang
+{[1370157784997721485815954530671515330927436759040],
+  {log_record,0,
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          574,574},
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          574,574},
+      {log_operation,
+          {tx_id,1490876555089336,<0.7102.0>},
+          prepare,
+          {prepare_log_payload,1490876555415447}}}},
+--------------------------------------------------------------------------------------------------
+Pattern/deconstruct:
+{[key_hash = 1370157784997721485815954530671515330927436759040],
+	{type=log_record, version = 0, 
+		{op_number ={node{node='antidote@127.0.0.1', dcid = {'antidote@127.0.0.1',{1490,186897,598677}}, global=574, local=574},
+		{bucket_op_number = node, 
+			node={node='antidote@127.0.0.1', dcid = {'antidote@127.0.0.1',{1490,186897,598677}}, global=574, local=574},
+		{log_operation, 
+			{tx_id, local_start_time=1490876555089336, server_pid=<0.7102.0>, 
+			op_type=prepare, 
+{prepare_log_payload, prepare_time=1490876555415447}}}}
+```
+
+#### Update
+```erlang
+  {log_record,0,
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          1,1},
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          1,1},
+      {log_operation,
+          {tx_id,1490876399777331,<9613.5640.0>},
+          update,
+          {update_log_payload,
+              {<<"5548">>,<<"antidote_bench_bucket">>},
+              undefined,antidote_crdt_counter,-1}}}},
+--------------------------------------------------------------------------------------------------
+Update pattern/deconstruct:
+{log_operation, 
+	{tx_id, local_start_time=1490876399777331, pid=<9613.5640.0>,
+op_type=update
+```
+
+#### Commit
+```erlang 
+ {[1370157784997721485815954530671515330927436759040],
+  {log_record,0,
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          575,575},
+      {op_number,
+          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+          575,575},
+      {log_operation,
+          {tx_id,1490876555089336,<0.7102.0>},
+          commit,
+          {commit_log_payload,
+              {{'antidote@127.0.0.1',{1490,186897,598677}},1490876555487478},
+              {dict,1,16,16,8,80,48,
+                  {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+                  {{[[{'antidote@127.0.0.1',{1490,186897,598677}}|
+                      1490876555089336]],
+                    [],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}}}}}, …
+--------------------------------------------------------------------------------------------------
+Commit log payload pattern (the rest remains the same) 
+op_type=commit, 
+{commit_log_payload, 
+	{commit_time={dcid={'antidote@127.0.0.1',{1490,186897,598677}}, clock_time=1490876555487478},
+	snapshot_time (vectorclock) =
+	      {dict,1,16,16,8,80,48,
+	                  {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+	                  {{[[{'antidote@127.0.0.1',{1490,186897,598677}}|
+	                      1490876555089336]],
+                    [],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}}}}}, …
+```
+
+### Execution example
+#### Prerequisites 
+- Antidote is running, logs are not empty
+- Script parameters : `node_name@address dump_directory`
+	- The trailing slash in `dump_directory` is required per unix conventions
+
+#### Run
+
+```bash
+$ log_dump.erl "antidote@127.0.0.1" "./dump_dir"
+Connected: 'antidote@127.0.0.1'
+Dir created: ./dump_dir/
+Retrieved 64 local and 0 distributed logs
+Processing logs from 'antidote@127.0.0.1' to "./dump_dir/log_dump-2017_4_11-13_57_25.txt"
+---------------------------------------------------------------- ok
+
+real	0m12.864s
+user	0m7.222s
+sys	0m1.352s
+```
+
+### How the script works
+
+- Connect with a redundant connection verification
+- Create, if needed, the dump directory specified in 2nd argument
+- Retrieve log files handles available at the node. Note that both local and distributed log handles are fetched, however the tool only processes the local logs  
+- Fetch logs accessible at the node
+
+```erlang
+disk_log:accessible_logs() -> {[LocalLog], [DistributedLog]}
+disk_log:accessible_logs().
+{["data/0--0",  
+"data/1004782375664995756265033322492444576013453623296--1004782375664995756265033322492444576013453623296", 
+"data/1027618338748291114361965898003636498195577569280--1027618338748291114361965898003636498195577569280",
+"data/1050454301831586472458898473514828420377701515264--1050454301831586472458898473514828420377701515264",
+"data/1073290264914881830555831049026020342559825461248--1073290264914881830555831049026020342559825461248",
+"data/1096126227998177188652763624537212264741949407232--1096126227998177188652763624537212264741949407232",
+	  [...]|...],
+	 []}
+```  
+
+- Prepare the dump filename, which respects following syntax for facilitated differentiation: `log_dump-YEAR_MONTH_DAY-HOUR_MINUTE_SECOND.txt`
+	The time values are fetched with Erlang's BIF:
+	```erlang
+	> calendar:now_to_local_time(erlang:timestamp()).
+	```
+- The log files are treated sequentially in the alphanumerical order (i.e. as provided by `disk_log:accessible_logs()` call) and delivered following many-to-one scenario (all the logs are stored in a single dump file), in the directory specified as 2nd call argument.
+	Erlang terms formatting is maintained, in order to ensure compatibility with BIF functions used to reload records into memory. Notably the `file:consult/1` and `erlang:is_record/2,3`. The former allows to parse a file and store its contents into Erlang records - assuming they're properly formatted - the latter verifies the record integrity
+- Example log contents of a prepare and commit statements
+
+```bash
+	$ cat ./dump_dir/log_dump-2017_4_11-13_57_25.txt
+	...
+	{[1370157784997721485815954530671515330927436759040],
+	  {log_record,0,
+	      {op_number,
+	          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+	          574,574},
+	      {op_number,
+	          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+	          574,574},
+	      {log_operation,
+	          {tx_id,1490876555089336,<0.7102.0>},
+	          prepare,
+	          {prepare_log_payload,1490876555415447}}}},
+	 {[1370157784997721485815954530671515330927436759040],
+	  {log_record,0,
+	      {op_number,
+	          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+	          575,575},
+	      {op_number,
+	          {'antidote@127.0.0.1',{'antidote@127.0.0.1',{1490,186897,598677}}},
+	          575,575},
+	      {log_operation,
+	          {tx_id,1490876555089336,<0.7102.0>},
+	          commit,
+	          {commit_log_payload,
+	              {{'antidote@127.0.0.1',{1490,186897,598677}},1490876555487478},
+	              {dict,1,16,16,8,80,48,
+	                  {[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]},
+	                  {{[[{'antidote@127.0.0.1',{1490,186897,598677}}|
+	                      1490876555089336]],
+	                    [],[],[],[],[],[],[],[],[],[],[],[],[],[],[]}}}}}}}, ...
+```
