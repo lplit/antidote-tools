@@ -1,16 +1,20 @@
 Python scripts based on MatPlotLib for plotting basho bench results for throughput and staleness.
 
 ## Usage
-Both scripts support drag&drop directories from Finder
-```
- $ <script> [<dir1> <dir2> <dir3> ...]
-```
+Both scripts support drag&drop from Finder
+
 
 ## Dependencies 
 - Python 2
 - MatPlotLib
 
 ## Throughput script
+
+Colour codes included support up to three directories at once, but if you add some [here](./throughput.py#L175) you can plot more than 3.
+
+```bash
+ $ throughput.py [<dir1> <dir2> <dir3>]
+```
 
 Both 1 million and 10 million keyspace plotting is available for *MultiDC-Multiround*, *MultiDC-SingleRound*, *MultiDC-Exponential* and *SingleDC* scenarios.
 
@@ -95,7 +99,48 @@ Workload dictionary for plotting
  }
 ```
 
-### Example
+### Output example
+```
+$ ./scripts/throughput.py multi-dc-exponential/bench-2017-04-16-1492332652-clocksi multi-dc-exponential/bench-2017-04-16-1492345917-physics
+Treating multi-dc-exponential/bench-2017-04-16-1492332652-clocksi
+Generating CAV for 10 writers
+--> {'l_tp': [136.86066666666665, 0.007336], 'th': '1'}
+--> {'l_tp': [138.983, 0.021728], 'th': '3'}
+--> {'l_tp': [141.49233333333333, 0.035616], 'th': '5'}
+--> {'l_tp': [144.588, 0.048776], 'th': '7'}
+--> {'l_tp': [150.02533333333335, 0.067172], 'th': '10'}
+--> {'l_tp': [158.66866666666667, 0.095312], 'th': '15'}
+--> {'l_tp': [187.951, 0.10724], 'th': '20'}
+--> {'l_tp': [234.65366666666665, 0.128632], 'th': '30'}
+--> {'l_tp': [312.1923333333333, 0.128912], 'th': '40'}
+Generating CAV for 100 writers
+--> {'l_tp': [156.142, 0.02714], 'th': '1'}
+--> {'l_tp': [162.75, 0.078234], 'th': '3'}
+--> {'l_tp': [172.41366666666664, 0.1239], 'th': '5'}
+--> {'l_tp': [181.39733333333334, 0.165672], 'th': '7'}
+--> {'l_tp': [190.701, 0.225498], 'th': '10'}
+Treating multi-dc-exponential/bench-2017-04-16-1492345917-physics
+Generating CR for 10 writers
+--> {'l_tp': [144.38833333333335, 0.006972], 'th': '1'}
+--> {'l_tp': [147.02533333333335, 0.020552], 'th': '3'}
+--> {'l_tp': [150.148, 0.033572], 'th': '5'}
+--> {'l_tp': [151.911, 0.046424], 'th': '7'}
+--> {'l_tp': [158.244, 0.063672], 'th': '10'}
+--> {'l_tp': [164.83866666666665, 0.091588], 'th': '15'}
+--> {'l_tp': [195.88466666666665, 0.102844], 'th': '20'}
+--> {'l_tp': [244.13966666666667, 0.123704], 'th': '30'}
+--> {'l_tp': [320.8496666666667, 0.125524], 'th': '40'}
+Generating CR for 100 writers
+--> {'l_tp': [163.28966666666665, 0.02596], 'th': '1'}
+--> {'l_tp': [169.022, 0.075284], 'th': '3'}
+--> {'l_tp': [174.21666666666667, 0.121776], 'th': '5'}
+--> {'l_tp': [184.07, 0.162604], 'th': '7'}
+--> {'l_tp': [197.449, 0.216884], 'th': '10'}
+Plotting graph...
+Showing interactive graph...
+```
+
+
 ![Example throughput plot](./images/singledc.png "Throughput example plot")
 
 
@@ -125,4 +170,28 @@ Files follow the same naming convention as for throughput directories, that is:
 ```Stale-keyspace-rounds-reads-writes-client_threads```
 
 ### Output example
+```
+$ ./scripts/staleness.py Stale-10000000-10-100-10-40.csv
+Treating Stale-10000000-10-100-10-40.csv
+> i: 61820075 sum 99.1138348909 ratio: 99.1138348909
+> i:  276363 sum 99.5569174455 ratio: 0.443082554526
+> i: 154702 sum 99.8049454281 ratio: 0.248027982582
+> i: 60681 sum 99.9022330262 ratio: 0.0972875981632
+> i: 29917 sum 99.9501978434 ratio: 0.0479648172286
+> i: 15650 sum 99.9752889084 ratio: 0.0250910649339
+> i: 8089 sum 99.9882577023 ratio: 0.0129687938818
+> i: 3995 sum 99.9946627377 ratio: 0.00640503542562
+> i: 1910 sum 99.9977249699 ratio: 0.00306223220599
+> i: 853 sum 99.9990925532 ratio: 0.00136758328362
+> i: 341 sum 99.9996392658 ratio: 0.00054671266086
+> i: 139 sum 99.9998621194 ratio: 0.000222853547975
+> i: 62 sum 99.9999615217 ratio: 9.94023019745e-05
+> i: 16 sum 99.9999871739 ratio: 2.56522069612e-05
+> i: 7 sum 99.9999983967 ratio: 1.12228405455e-05
+> i: 1 sum 100.0 ratio: 1.60326293507e-06
+xa [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] y [99.11383489094871, 99.55691744547435, 99.80494542805606, 99.90223302621924, 99.95019784344782, 99.97528890838173, 99.98825770226354, 99.99466273768915, 99.99772496989515, 99.99909255317877, 99.99963926583963, 99.99986211938761, 99.99996152168958, 99.99998717389654, 99.99999839673708, 100.0000000000000]
+Plotting
+```
+
+
 ![Example staleness plot](./images/example-staleness-muli-dc-multi-round-phyx-csi.png "Staleness chart")
