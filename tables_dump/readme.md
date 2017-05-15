@@ -156,7 +156,7 @@ materialized_snapshot {
   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}]
 Ok
 ```
-#### What's what
+#### Pattern deconstruct
 ```erlang
 clocksi_payload {
 	key={my_counter,my_bucket}
@@ -231,10 +231,10 @@ timestamp = 1490186922302997
 ```
 
 ## Usage
-Assuming an Antidote instance is running at localhost (`127.0.0.1`), and you target dump directory is `./dump_dir/`
-The directory will be created if it doesn't exist.
+Assuming an Antidote instance is running at localhost `127.0.0.1`, registered under name ```antidote```, and your target dump directory is `./dump_dir/`
+(which will be created if it doesn't exist)
 
-**Important:** The trailing ```/``` in the dump directory's name is **necessary**. ```./dump_dir``` won't work, as it references a file name according to unix conventions.
+**Important:** The trailing ```/``` in the dump directory's name is **necessary**. ```./dump_dir``` won't work, as it references a file according to unix conventions.
 
 
 ```bash

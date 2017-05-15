@@ -6,18 +6,22 @@ Both scripts support drag&drop directories from Finder
  $ <script> [<dir1> <dir2> <dir3> ...]
 ```
 
+## Dependencies 
+- Python 2
+- MatPlotLib
+
 ## Throughput script
 
-The script's directory (the command line arguments)  should be structured as such
-Both 1million and 10 million keyspace plotting is available, as well as exponential, multidc multi- and single-round.
+Both 1 million and 10 million keyspace plotting is available for *MultiDC-Multiround*, *MultiDC-SingleRound*, *MultiDC-Exponential* and *SingleDC* scenarios.
 
 ### Changing keyspace and rounds
-For *MultiDC* (either multi or single round scenarios) comment out the second line, for *Exponential* scenario, comment out the *MultiDC* line.
-
+For *MultiDC-Multiround*, *MultiDC-SingleRound*, *SingleDC*, use the following line in [load_tput function](./throughput.py#L74)
 ```python
-e['avg_tput']= float(((avg/3)/10)*((rounds*reads)+writes))/1000000 # MultiDC MultiRound
-e['avg_tput']= float(((avg/3)/10)*(1022+writes))/1000000 # For exponential
-
+e['avg_tput']= float(((avg/3)/10)*((rounds*reads)+writes))/1000000
+```
+for *MultiDC-Exponential*, the following:
+```python
+e['avg_tput']= float(((avg/3)/10)*(1022+writes))/1000000
 ```
 
 Various other settings are definable in the [```plot(workload)``` function](./throughput.py#L159-L244). Notably at [line 179](./throughput.py#L179) desired write ratios to plot can be defined.
@@ -50,8 +54,7 @@ bench-2017-04-12-1492022929-ec/
 │   └── txn_latencies.csv
 ...
 ```
-The dirs fields correspond to the following parameters ```basho_bench_summary-keyspace-rounds-reads-writes-client_threads```.
-This result ```basho_bench_summary-11-22-33-44-44-55``` means that the bench was ran with the following parameters:
+The scrip recovers a number of information from directory name. For example ```basho_bench_summary-11-22-33-44-44-55``` represents the following:
 
 ```
 keyspace: 		11
@@ -60,6 +63,9 @@ reads:			33
 writes:			44
 client_threads:	55
 ```
+therefore directories names should follow the following naming scheme:
+ ```basho_bench_summary-keyspace-rounds-reads-writes-client_threads```
+
 
 Parsing structure is a key value dictionary
 
@@ -93,7 +99,7 @@ Workload dictionary for plotting
 
 
 ## Staleness script
-Plots a [CDF](https://en.wikipedia.org/wiki/Cumulative_distribution_function) plot for version staleness. The below example illustrates that for ~99% of reads, the most recent version has been returned for the red curve.
+Plots a [CDF](https://en.wikipedia.org/wiki/Cumulative_distribution_function) plot for version staleness. The example below illustrates that for ~99% of reads, the most recent version has been returned for the red curve.
 
 ### Tree structure
 ```bash
@@ -117,5 +123,5 @@ staleness-2017-04-12-1492030851-clocksi/
 Files follow the same naming convention as for throughput directories, that is:
 ```Stale-keyspace-rounds-reads-writes-client_threads```
 
-### Example output 
+### Output example
 ![Example staleness plot](./images/example-staleness-muli-dc-multi-round-phyx-csi.png "Staleness chart")
