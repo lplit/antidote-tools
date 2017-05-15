@@ -1,5 +1,5 @@
 ## Intro
-These scripts were developed in order to easily dump cache and snapshot tables from [Antidote](https://github.com/SyncFree/antidote) to a file. ```cache_dump.erl``` handles *snapshots* and *caches*, while ```log_dupm.erl``` handles the *internal logs*.
+These scripts were developed in order to easily dump both logs and cache/snapshot tables from [Antidote](https://github.com/SyncFree/antidote) to a file. ```cache_dump.erl``` handles *snapshots* and *caches*, while ```log_dupm.erl``` handles the *internal logs*.
 ## Dependencies
 ### General 
 #### [Antidote](https://github.com/SyncFree/antidote)
@@ -422,7 +422,8 @@ disk_log:accessible_logs().
 	> calendar:now_to_local_time(erlang:timestamp()).
 	```
 - The log files are treated sequentially in the alphanumerical order (i.e. as provided by `disk_log:accessible_logs()` call) and delivered following many-to-one scenario (all the logs are stored in a single dump file), in the directory specified as 2nd call argument.
-	Erlang terms formatting is maintained, in order to ensure compatibility with BIF functions used to reload records into memory. Notably the `file:consult/1` and `erlang:is_record/2,3`. The former allows to parse a file and store its contents into Erlang records - assuming they're properly formatted - the latter verifies the record integrity
+	Erlang terms formatting is maintained, in order to ensure compatibility with BIF functions used to reload records into memory. Notably the `file:consult/1` and `erlang:is_record/2,3`. The former allows to parse a file and store its contents into Erlang records - assuming they're properly formatted - the latter verifies the record integrity  
+	Turns out because of specific formatting used within Antidote, those BIFs do not work in this particular scenario.
 - Example log contents of a prepare and commit statements
 
 ```bash
