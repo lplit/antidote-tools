@@ -18,7 +18,7 @@ The script uses RPCs and pulls information from Erlang's built-in storage tables
 ### ```log_dump.erl``` specific 
 
 #### [Erlang Disk Log](http://erlang.org/doc/man/disk_log.html)
-Antidote uses the [Erlang Disk Log](http://erlang.org/doc/man/disk_log.html) module to handle logs interanaly. 
+Antidote uses the [Erlang Disk Log](http://erlang.org/doc/man/disk_log.html) module to handle logs internally. 
 
 
 ## Caches dump - ```cache_dump.erl```
