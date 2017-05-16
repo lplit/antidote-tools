@@ -1,6 +1,5 @@
-# Parser
-
-## [Abandoned] Implementation 
+# Parser [Abandonned]
+This implementation has been **abandoned** due to conceptual error in architecture of the tool, and the functionalities will be directly implemented into [Antidote](https://github.com/SyncFree/antidote) replication protocols.
 
 ### Propositions
 - Regexp parser that will recognise the log_record 
@@ -56,17 +55,17 @@ When referring to log record hereafter, here's what we mean:
 ### Infos from the structure
 Data available in the log structure:
 
-- Key hash  
-- Operation type (always `log_record`)  
-- Version  
-- Op_number  
-- Transaction id  
-	- Node - "antidote@127.0.0.1"  
-	- Node PID - <0.7102.0>  
-- Timestamps  
-	- Prepare time  
-	- Commit time  
-	- Clock time  
+- Key hash
+- Operation type (always `log_record`)
+- Version
+- Op_number
+- Transaction id
+	- Node - "antidote@127.0.0.1"
+	- Node PID - <0.7102.0>
+- Timestamps
+	- Prepare time
+	- Commit time
+	- Clock time
 Snapshot time
 
 ### Invariants
@@ -76,13 +75,5 @@ Snapshot time
 |---|---|
 | Monotonically increasing TX ids | `tx_id` |
 | Prepare->Commit (2PC correctness) | `op_type`, `tx_id` |
-| Unique tx ids | `tx_id` |
-
-
-- Unique TX ids  
-	- Req: TX id
-	- Commit time
-- Syntactic correctness  
-	- isRecord() erlang BIF
-- Prepare and commit records  
-log_payload from log_operation
+| Unique transaction ids | `tx_id` |
+| Syntactic coretness | Erlang `isRecord()` BIF |
