@@ -2,31 +2,29 @@
 This implementation has been **abandoned** due to conceptual error in architecture of the tool, and the functionalities will be directly implemented into [Antidote](https://github.com/SyncFree/antidote) replication protocols.
 
 ### Propositions
-- Regexp parser that will recognise the log_record 
+- Regexp parser that will recognise the log_record
 	- Pros
 		- As soon as I find any, pinky promise I'll put it here
 	- Cons
 		- Tricky, tricky, regexps
 		- If log format changes, regexp will probably have to change
-	
 - Parsing the file line by line, counting the number of curly brackets to reconstruct the record and then treat it
-	- Pros  
+	- Pros
 		- Complete control while parsing the file
 		- Somewhat independent of log implementation, brackets are brackets
 	- Cons
 		- I dunno man
 		- Freaking annoying string management in Erlang
-		
 - sed-ing the dump file, removing the chevrons before passing it to BIFs, maintaining original conception
 	- Pros
 		- Original conception maintained
 		- Could maybe use the Erlang BIF `file:consult/1` to reconstruct the records afterwards automatically
 		- No changes to `log_dump.erl` script
-		- sed should be relatively easy to do 
+		- sed should be relatively easy to do
 	- Cons
 		- Don't know if it works
 		- Would have to be dev'd just to check
-The chosen way: 
+The chosen way:
 	- Parse the log file by line counting the curly brackets
 	- Regexp to get the required fields
 	- Fill the abstract log record
