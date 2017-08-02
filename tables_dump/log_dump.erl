@@ -109,10 +109,14 @@ prep_filename(Dir) ->
 log_to_file(Node, Log, Continuation, File) ->
     case Continuation of
 	start -> % First open
-	    {Cont, Items} = rpc:call(Node, disk_log, chunk, [Log, start]),
-	    Contents=io_lib:fwrite("~p", [Items]),
-	    ok = rpc:call(Node, file, write, [File, Contents]),
-	    log_to_file(Node, Log, Cont, File);
+	    case rpc:call(Node, disk_log, chunk, [Log, start]) of 
+		{Cont, Items} ->
+		    Contents=io_lib:fwrite("~p", [Items]),
+		    ok = rpc:call(Node, file, write, [File, Contents]),
+		    log_to_file(Node, Log, Cont, File);
+		eof ->
+		    {ok, eof}
+	    end;
 	eof -> % EOF
 	    {ok, eof};
 	{error, R}  ->
