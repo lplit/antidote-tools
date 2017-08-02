@@ -51,7 +51,7 @@ antidote_connect(Node) ->
 	Other -> %% Offline
 	    io:format("Can't connect to node ~p (return: ~p)! Aborting.~n", 
 		      [Node, Other]),
-	    {error, node_offline},
+	    %{error, node_offline},
 	    halt(1)
     end.
 
