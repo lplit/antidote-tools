@@ -52,7 +52,7 @@ antidote_connect(Node) ->
 	    io:format("Can't connect to node ~p (return: ~p)! Aborting.~n", 
 		      [Node, Other]),
 	    {error, node_offline},
-		halt(1)
+	    halt(1)
     end.
 
 %% Ensures the dir for dump is present, creates it otherwise
@@ -114,10 +114,11 @@ log_to_file(Node, Log, Continuation, File) ->
 		    Contents=io_lib:fwrite("~p", [Items]),
 		    ok = rpc:call(Node, file, write, [File, Contents]),
 		    log_to_file(Node, Log, Cont, File);
-		eof ->
+		eof -> % First open of empty file, skip
+		    io:format("~p empty, skip!~n", [Log]),
 		    {ok, eof}
 	    end;
-	eof -> % EOF
+	eof -> 
 	    {ok, eof};
 	{error, R}  ->
 	    io:format("Error: ~p~n", [R]),
