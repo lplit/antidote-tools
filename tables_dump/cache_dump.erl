@@ -100,7 +100,7 @@ filter_tabs([H|T], {Ops, Snap}) ->
 %% Iterate over table and execute tab2file on it.
 %% Tables are saved as blobs, and can be opened with ets:file2tab/1,2
 -spec to_file(string(), atom(), list()) -> ok | {error, {saving_failed, _}}.
-to_file(Dir, Node, []) ->
+to_file(_Dir, _Node, []) ->
     ok;
 to_file(Dir, Node, [H | T]) ->
     TabName = rpc:call(Node, ets, info, [H, name]),
@@ -109,8 +109,8 @@ to_file(Dir, Node, [H | T]) ->
     io:format("Saving  ~p~n", [Name]),
     case rpc:call(Node, ets, tab2file, [TabName, Name]) of 
 	ok ->     
-	    to_file(Node, T);
+	    to_file(Dir, Node, T);
 	{badrpc, R} -> 
-	    {error, {saving_failed, R}},
+	    %{error, {saving_failed, R}},
 	    halt(1)
     end.
